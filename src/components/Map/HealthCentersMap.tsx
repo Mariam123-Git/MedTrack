@@ -3,6 +3,11 @@ import { MapPin, Phone, Navigation, Italic as Hospital, Stethoscope, Building, H
 import { mockHealthCenters } from '../../data/mockData';
 import { HealthCenter } from '../../types';
 
+
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+
+
 export function HealthCentersMap() {
   const [selectedCenter, setSelectedCenter] = useState<HealthCenter | null>(null);
   const [filter, setFilter] = useState<string>('all');
@@ -88,13 +93,37 @@ export function HealthCentersMap() {
       </div>
 
       {/* Carte simulée */}
-      <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl p-4 border-2 border-dashed border-gray-300 h-64 flex items-center justify-center">
-        <div className="text-center">
-          <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">Carte interactive</p>
-          <p className="text-sm text-gray-400">Intégration Google Maps / OpenStreetMap</p>
-        </div>
-      </div>
+      <div className="h-96 rounded-2xl overflow-hidden border-2 border-gray-300">
+  <MapContainer
+    center={[14.6928, -17.4467]} // par exemple : Dakar
+    zoom={12}
+    scrollWheelZoom={true}
+    style={{ height: '100%', width: '100%' }}
+  >
+    <TileLayer
+      attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    />
+    {filteredCenters.map((center) => (
+      <Marker
+        key={center.id}
+        position={[center.coordinates.lat, center.coordinates.lng]}
+        icon={L.icon({
+          iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+        })}
+      >
+        <Popup>
+          <strong>{center.name}</strong><br />
+          {getTypeLabel(center.type)}<br />
+          {center.location}
+        </Popup>
+      </Marker>
+    ))}
+  </MapContainer>
+</div>
+
 
       {/* Liste des centres */}
       <div className="space-y-3">
